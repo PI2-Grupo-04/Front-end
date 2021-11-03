@@ -1,4 +1,9 @@
+import { useHistory } from "react-router-dom";
+
 function Home() {
+  const history = useHistory();
+  const handleClickDono = () => history.push("/login");
+
   return (
     <div className="flex flex-col items-center mt-20 space-y-20">
       <h1 className="text-4xl text-yellow-900">Bem Vindo!</h1>
@@ -6,7 +11,10 @@ function Home() {
         <button className="bg-red-500 h-60 w-60 text-white font-semibold text-2xl rounded">
           Sou Cliente
         </button>
-        <button className="bg-green-500 h-60 w-60 text-white font-semibold text-2xl rounded">
+        <button
+          className="bg-green-500 h-60 w-60 text-white font-semibold text-2xl rounded"
+          onClick={handleClickDono}
+        >
           Sou Dono
         </button>
       </div>

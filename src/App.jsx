@@ -1,6 +1,7 @@
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
+import Login from "./pages/Login";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
           <Navbar />
           <Switch>
             <Route path="/" component={Home} exact />
+            <Route path="/login" component={Login} exact />
           </Switch>
         </div>
       </BrowserRouter>
