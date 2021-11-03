@@ -12,6 +12,7 @@ Repositório do frontend do projeto "Robô Garçom".
 2. Crie uma branch (`git checkout -b feat/x-branch-name`)
 3. Commit suas alterações (`git commit -am "Add feat"`)
 4. Push para a branch (`git push origin feat/x-branch-name`)
+
 ## Como executar
 
 ### Pré requisitos
