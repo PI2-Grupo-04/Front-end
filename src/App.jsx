@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Restaurant from "./pages/Restaurant";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
             <Route path="/" component={Home} exact />
             <Route path="/login" component={Login} exact />
             <Route path="/register" component={Register} exact />
+            <Route path="/restaurants" component={Restaurant} exact />
           </Switch>
         </div>
       </BrowserRouter>

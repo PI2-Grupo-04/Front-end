@@ -14,6 +14,8 @@ function Login() {
     setUsername("");
     setPassword("");
 
+    localStorage.setItem("token", response.data.data.token);
+
     console.log(response);
   };
 
