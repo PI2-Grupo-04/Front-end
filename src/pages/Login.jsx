@@ -10,8 +10,10 @@ function Login() {
       username: username,
       password: password,
     });
+
     setUsername("");
     setPassword("");
+
     console.log(response);
   };
 
@@ -45,6 +47,13 @@ function Login() {
         >
           Enviar
         </button>
+
+        <span className="self-end">
+          Não possui conta? &nbsp;
+          <a className="text-blue-700" href="/register">
+            Registrar
+          </a>
+        </span>
       </div>
     </div>
   );
