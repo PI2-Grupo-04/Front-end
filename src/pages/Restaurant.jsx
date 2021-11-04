@@ -4,6 +4,7 @@ import api from "../service/api";
 function Restaurant() {
   const [restaurants, setRestaurants] = useState("");
   const [visible, setVisible] = useState(false);
+  const [item, setItem] = useState(null);
 
   useEffect(async () => {
     fetchData();
@@ -14,19 +15,28 @@ function Restaurant() {
     setRestaurants(response.data.data);
   };
 
-  const openModal = () => setVisible(true);
+  const openModal = (item = null) => {
+    setItem(item);
+
+    setVisible(true);
+  };
   const closeModal = () => setVisible(false);
 
   return (
     <div>
-      <RestaurantModal visible={visible} close={closeModal} fetch={fetchData} />
+      <RestaurantModal
+        visible={visible}
+        close={closeModal}
+        fetch={fetchData}
+        item={item}
+      />
       <div className="flex justify-center h-full">
         <div className="flex flex-col mt-10 space-y-4">
           <div className="flex justify-between space-x-8">
             <h1 className="text-yellow-900 text-2xl">Restaurantes</h1>
             <button
               className="bg-green-500 px-4 text-white rounded"
-              onClick={openModal}
+              onClick={() => openModal()}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -42,7 +52,11 @@ function Restaurant() {
               </svg>
             </button>
           </div>
-          <RestaurantList restaurants={restaurants} fetch={fetchData} />
+          <RestaurantList
+            restaurants={restaurants}
+            fetch={fetchData}
+            openModal={openModal}
+          />
         </div>
       </div>
     </div>
@@ -79,6 +93,21 @@ function RestaurantList(props) {
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
+                <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+              </svg>
+            </button>
+            <button
+              onClick={(e) => {
+                props.openModal(item);
+                e.stopPropagation();
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
                 <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
                 <path
                   fillRule="evenodd"
@@ -90,7 +119,7 @@ function RestaurantList(props) {
             <button
               onClick={(e) => {
                 handleDelete(item._id);
-                e.stopPropagation()
+                e.stopPropagation();
               }}
             >
               <svg
@@ -117,10 +146,31 @@ function RestaurantModal(props) {
 
   const getDisplay = () => (props.visible ? "fixed" : "hidden");
 
+  useEffect(async () => {
+    if (props.item) {
+      setName(props.item.name);
+    }
+  }, [props.item]);
+
   const handleSubmit = async () => {
-    const response = await api.post("restaurant", { name });
+    if (props.item) {
+      await updateMethod();
+    } else {
+      await createMethod();
+    }
+
+    setName("");
+
     props.fetch();
     props.close();
+  };
+
+  const createMethod = async () => {
+    const response = await api.post("restaurant", { name });
+  };
+
+  const updateMethod = async () => {
+    const response = await api.put(`restaurant/${props.item._id}`, { name });
   };
 
   return (
