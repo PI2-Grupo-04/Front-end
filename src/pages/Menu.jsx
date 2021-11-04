@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import api from "../service/api";
 
-function Restaurant() {
-  const [restaurants, setRestaurants] = useState(null);
+function Menu() {
+  let { id } = useParams();
+
+  const [menus, setMenus] = useState(null);
   const [visible, setVisible] = useState(false);
   const [item, setItem] = useState(null);
 
@@ -12,8 +14,9 @@ function Restaurant() {
   }, []);
 
   const fetchData = async () => {
-    const response = await api.get("restaurant");
-    setRestaurants(response.data.data);
+    const response = await api.get(`restaurant/${id}/menu`);
+
+    setMenus(response.data.data);
   };
 
   const openModal = (item = null) => {
@@ -25,16 +28,17 @@ function Restaurant() {
 
   return (
     <div>
-      <RestaurantModal
+      <MenuModal
         visible={visible}
         close={closeModal}
         fetch={fetchData}
         item={item}
+        id={id}
       />
       <div className="flex justify-center h-full">
         <div className="flex flex-col mt-10 space-y-4">
           <div className="flex justify-between space-x-8">
-            <h1 className="text-yellow-900 text-2xl">Restaurantes</h1>
+            <h1 className="text-yellow-900 text-2xl">Cardápios</h1>
             <button
               className="bg-green-500 px-4 text-white rounded"
               onClick={() => openModal()}
@@ -53,27 +57,21 @@ function Restaurant() {
               </svg>
             </button>
           </div>
-          <RestaurantList
-            restaurants={restaurants}
-            fetch={fetchData}
-            openModal={openModal}
-          />
+          <MenuList menus={menus} openModal={openModal} fetch={fetchData} />
         </div>
       </div>
     </div>
   );
 }
 
-function RestaurantList(props) {
-  const history = useHistory();
-
+function MenuList(props) {
   const handleDelete = async (id) => {
-    const response = await api.delete(`restaurant/${id}`);
+    const response = await api.delete(`menu/${id}`);
     props.fetch();
   };
 
-  return props.restaurants
-    ? props.restaurants.map((item) => (
+  return props.menus
+    ? props.menus.map((item) => (
         <div
           className="flex bg-red-400 space-x-8 justify-between text-white font-semibold py-2 pl-10 pr-4 rounded"
           key={item._id}
@@ -89,16 +87,6 @@ function RestaurantList(props) {
             </div>
           </div>
           <div className="flex space-x-2">
-            <button onClick={() => history.push(`/menu/${item._id}`)}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-              </svg>
-            </button>
             <button
               onClick={(e) => {
                 props.openModal(item);
@@ -144,7 +132,7 @@ function RestaurantList(props) {
     : "";
 }
 
-function RestaurantModal(props) {
+function MenuModal(props) {
   const [name, setName] = useState("");
 
   const getDisplay = () => (props.visible ? "fixed" : "hidden");
@@ -169,11 +157,11 @@ function RestaurantModal(props) {
   };
 
   const createMethod = async () => {
-    const response = await api.post("restaurant", { name });
+    const response = await api.post(`restaurant/${props.id}/menu`, { name });
   };
 
   const updateMethod = async () => {
-    const response = await api.put(`restaurant/${props.item._id}`, { name });
+    const response = await api.put(`menu/${props.item._id}`, { name });
   };
 
   return (
@@ -201,7 +189,7 @@ function RestaurantModal(props) {
           </button>
 
           <div className="flex flex-col items-center space-y-3">
-            <label htmlFor="restaurantName">Nome do Restaurante</label>
+            <label htmlFor="restaurantName">Nome do Cardápio</label>
             <input
               className="rounded px-2 bg-yellow-100"
               type="text"
@@ -223,4 +211,4 @@ function RestaurantModal(props) {
   );
 }
 
-export default Restaurant;
+export default Menu;
