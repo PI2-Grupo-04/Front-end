@@ -164,6 +164,9 @@ function ItemModal(props) {
     }
 
     setName("");
+    setDescription("");
+    setPrice("");
+    setTime("");
 
     props.fetch();
     props.close();
