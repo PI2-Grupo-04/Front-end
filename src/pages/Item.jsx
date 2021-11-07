@@ -1,22 +1,22 @@
 import { useEffect, useState } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import api from "../service/api";
 
-function Menu() {
+function Item() {
   const { id } = useParams();
 
-  const [menus, setMenus] = useState(null);
+  const [menu, setMenu] = useState(null);
   const [visible, setVisible] = useState(false);
-  const [item, setItem] = useState(null);
+  const [item, setItem] = useState(false);
 
   useEffect(async () => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    const response = await api.get(`restaurant/${id}/menu`);
+    const response = await api.get(`menu/${id}`);
 
-    setMenus(response.data.data);
+    setMenu(response.data.data);
   };
 
   const openModal = (item = null) => {
@@ -28,17 +28,19 @@ function Menu() {
 
   return (
     <div>
-      <MenuModal
+      <ItemModal
         visible={visible}
-        close={closeModal}
-        fetch={fetchData}
-        item={item}
         id={id}
+        item={item}
+        fetch={fetchData}
+        close={closeModal}
       />
       <div className="flex justify-center h-full">
         <div className="flex flex-col mt-10 space-y-4">
           <div className="flex justify-between space-x-8">
-            <h1 className="text-yellow-900 text-2xl">Cardápios</h1>
+            <h1 className="text-yellow-900 text-2xl">
+              {menu ? menu.name : ""}
+            </h1>
             <button
               className="bg-green-500 px-4 text-white rounded"
               onClick={() => openModal()}
@@ -57,23 +59,26 @@ function Menu() {
               </svg>
             </button>
           </div>
-          <MenuList menus={menus} openModal={openModal} fetch={fetchData} />
+          <ItemList
+            items={menu}
+            openModal={openModal}
+            fetch={fetchData}
+            menu_id={id}
+          />
         </div>
       </div>
     </div>
   );
 }
 
-function MenuList(props) {
-  const history = useHistory();
-
+function ItemList(props) {
   const handleDelete = async (id) => {
-    const response = await api.delete(`menu/${id}`);
+    const response = await api.delete(`menu/${props.menu_id}/item/${id}`);
     props.fetch();
   };
 
-  return props.menus
-    ? props.menus.map((item) => (
+  return props.items
+    ? props.items.items.map((item) => (
         <div
           className="flex bg-red-400 space-x-8 justify-between text-white font-semibold py-2 pl-10 pr-4 rounded"
           key={item._id}
@@ -89,16 +94,6 @@ function MenuList(props) {
             </div>
           </div>
           <div className="flex space-x-2">
-            <button onClick={() => history.push(`/menu/${item._id}/item`)}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-              </svg>
-            </button>
             <button
               onClick={(e) => {
                 props.openModal(item);
@@ -144,14 +139,20 @@ function MenuList(props) {
     : "";
 }
 
-function MenuModal(props) {
+function ItemModal(props) {
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [preparation_time, setTime] = useState("");
 
   const getDisplay = () => (props.visible ? "fixed" : "hidden");
 
   useEffect(async () => {
     if (props.item) {
       setName(props.item.name);
+      setDescription(props.item.description);
+      setPrice(props.item.price);
+      setTime(props.item.preparation_time);
     }
   }, [props.item]);
 
@@ -169,11 +170,21 @@ function MenuModal(props) {
   };
 
   const createMethod = async () => {
-    const response = await api.post(`restaurant/${props.id}/menu`, { name });
+    const response = await api.post(`menu/${props.id}/item`, {
+      name,
+      price,
+      description,
+      preparation_time,
+    });
   };
 
   const updateMethod = async () => {
-    const response = await api.put(`menu/${props.item._id}`, { name });
+    const response = await api.put(`menu/${props.id}/item/${props.item._id}`, {
+      name,
+      price,
+      description,
+      preparation_time,
+    });
   };
 
   return (
@@ -183,7 +194,7 @@ function MenuModal(props) {
         " flex justify-center items-center w-screen h-screen bg-black inset-0 m-auto bg-opacity-40"
       }
     >
-      <div className="w-60 h-60 bg-yellow-300 text-yellow-900 px-2 pt-2 pb-4 rounded ">
+      <div className="w-60 bg-yellow-300 text-yellow-900 px-2 pt-2 pb-4 rounded ">
         <div className="flex flex-col justify-between items-center h-full">
           <button className="self-end" onClick={props.close}>
             <svg
@@ -201,18 +212,45 @@ function MenuModal(props) {
           </button>
 
           <div className="flex flex-col items-center space-y-3">
-            <label htmlFor="restaurantName">Nome do Cardápio</label>
+            <label htmlFor="itemName">Nome do Item</label>
             <input
               className="rounded px-2 bg-yellow-100"
               type="text"
-              id="restaurantName"
+              id="itemName"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
             />
+            <label htmlFor="itemPrice">Preço do Item</label>
+            <input
+              className="rounded px-2 bg-yellow-100"
+              type="number"
+              id="itemPrice"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              required
+            />
+            <label htmlFor="itemDescription">Descrição do Item</label>
+            <input
+              className="rounded px-2 bg-yellow-100"
+              type="text"
+              id="itemDescription"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+            <label htmlFor="preparationTime">Tempo de preparo</label>
+            <input
+              className="rounded px-2 bg-yellow-100"
+              type="number"
+              id="preparationTime"
+              value={preparation_time}
+              onChange={(e) => setTime(e.target.value)}
+              required
+            />
           </div>
           <button
-            className="bg-green-400 text-white font semibold py-1 w-full rounded"
+            className="bg-green-400 text-white font semibold py-1 w-full rounded mt-6"
             onClick={handleSubmit}
           >
             Enviar
@@ -223,4 +261,4 @@ function MenuModal(props) {
   );
 }
 
-export default Menu;
+export default Item;

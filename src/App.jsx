@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Restaurant from "./pages/Restaurant";
 import Menu from "./pages/Menu";
+import Item from "./pages/Item";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/register" component={Register} exact />
             <Route path="/restaurants" component={Restaurant} exact />
             <Route path="/menu/:id" component={Menu} exact />
+            <Route path="/menu/:id/item" component={Item} exact />
           </Switch>
         </div>
       </BrowserRouter>
