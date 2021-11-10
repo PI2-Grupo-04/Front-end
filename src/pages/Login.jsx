@@ -2,9 +2,9 @@ import api from "../service/api";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 
-function Login() {
+function Login({ login }) {
   const history = useHistory();
-  
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -19,7 +19,8 @@ function Login() {
 
     localStorage.setItem("token", response.data.data.token);
 
-    console.log(response);
+    login();
+
     history.push("/restaurants");
   };
 
