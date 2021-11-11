@@ -93,7 +93,7 @@ function ItemList(props) {
               <span>{item.name}</span>
             </div>
           </div>
-          <div className="flex space-x-2">
+          <div className="flex space-x-4">
             <button
               onClick={(e) => {
                 props.openModal(item);

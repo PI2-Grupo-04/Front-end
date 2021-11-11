@@ -88,7 +88,7 @@ function MenuList(props) {
               <span>{item.name}</span>
             </div>
           </div>
-          <div className="flex space-x-2">
+          <div className="flex space-x-4">
             <button onClick={() => history.push(`/menu/${item._id}/item`)}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"

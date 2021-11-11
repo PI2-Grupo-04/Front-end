@@ -10,6 +10,7 @@ import Menu from "./pages/Menu";
 import Item from "./pages/Item";
 import Order from "./pages/Order";
 import MakeOrder from "./pages/MakeOrder";
+import CheckOrders from "./pages/CheckOrders";
 
 function App() {
   // localStorage.removeItem("token");
@@ -84,6 +85,13 @@ function App() {
               component={MakeOrder}
               auth={!logged_in}
               redirect="/restaurants"
+              exact
+            />
+            <GuardedRoute
+              path="/restaurant/:id/orders"
+              component={CheckOrders}
+              auth={logged_in}
+              redirect="/"
               exact
             />
           </Switch>
